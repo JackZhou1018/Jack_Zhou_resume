@@ -2,18 +2,22 @@ import { education } from '../data/resume.js'
 
 export default function Education() {
   return (
-    <section id="education" className="container">
-      <div className="section-head">
-        <p className="kicker">// Education</p>
-        <h2>教育经历</h2>
-      </div>
-      <div className="timeline">
+    <section className="section" id="education" style={{ paddingTop: 0 }}>
+      <div className="container">
+        <div className="section-head reveal">
+          <span className="sec-index">06</span>
+          <h2>Education</h2>
+          <span className="cn">教育背景</span>
+        </div>
         {education.map((e) => (
-          <article key={e.school} className="timeline-item panel">
-            <span className="tl-period mono">{e.period}</span>
-            <h3>{e.school}</h3>
-            <p className="tl-role">{e.major} · {e.degree}</p>
-          </article>
+          <div key={e.school} className="panel edu-row reveal">
+            <span className="edu-period">{e.period}</span>
+            <div>
+              <div className="edu-school">{e.school}</div>
+              <div className="edu-major">{e.major}</div>
+            </div>
+            <span className="edu-degree" style={{ marginLeft: 'auto' }}>{e.degree}</span>
+          </div>
         ))}
       </div>
     </section>

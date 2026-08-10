@@ -2,25 +2,29 @@ import { experiences } from '../data/resume.js'
 
 export default function Experience() {
   return (
-    <section id="experience" className="container">
-      <div className="section-head">
-        <p className="kicker">// Career</p>
-        <h2>工作经历</h2>
-      </div>
-      <div className="timeline">
-        {experiences.map((e) => (
-          <article key={e.company} className="timeline-item panel">
-            <div className="tl-head">
-              <span className="tl-period mono">{e.period}</span>
-              <h3>{e.company}</h3>
-              <p className="tl-role">{e.role}</p>
+    <section className="section" id="experience">
+      <div className="container">
+        <div className="section-head reveal">
+          <span className="sec-index">02</span>
+          <h2>Experience</h2>
+          <span className="cn">工作经历</span>
+        </div>
+        <div className="timeline">
+          {experiences.map((e) => (
+            <div key={e.company} className="t-item reveal">
+              <div className="t-dot" />
+              <div className="t-head">
+                <span className="t-period">{e.period}</span>
+                <span className="t-company">{e.company}</span>
+                <span className="t-role">{e.role}</span>
+              </div>
+              <p className="t-desc">{e.desc}</p>
+              <ul className="t-items">
+                {e.items.map((it) => <li key={it}>{it}</li>)}
+              </ul>
             </div>
-            <p className="tl-desc">{e.desc}</p>
-            <ul className="tl-items">
-              {e.items.map((it) => <li key={it}>{it}</li>)}
-            </ul>
-          </article>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   )

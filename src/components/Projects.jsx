@@ -2,25 +2,28 @@ import { projects } from '../data/resume.js'
 
 export default function Projects() {
   return (
-    <section id="projects" className="container">
-      <div className="section-head">
-        <p className="kicker">// Selected Projects</p>
-        <h2>项目经历</h2>
-        <p>POC 验证、集采投标、集群交付与展会支持——从技术攻坚到商业落地的完整闭环。</p>
-      </div>
-      <div className="project-list">
-        {projects.map((p) => (
-          <article key={p.name} className="panel project">
-            <div className="project-head">
-              <span className="tl-period mono">{p.period}</span>
+    <section className="section" id="projects">
+      <div className="container">
+        <div className="section-head reveal">
+          <span className="sec-index">03</span>
+          <h2>Key Projects</h2>
+          <span className="cn">代表项目</span>
+        </div>
+        <div className="proj-grid">
+          {projects.map((p) => (
+            <div key={p.name} className="panel proj reveal">
+              <div className="proj-top">
+                <span className="proj-tag">{p.tag || 'PROJECT'}</span>
+                <span className="proj-year">{p.period}</span>
+              </div>
               <h3>{p.name}</h3>
-              <span className="project-role">{p.role}</span>
+              <div className="proj-role">{p.role}</div>
+              <ul className="proj-points">
+                {p.points.map((pt) => <li key={pt}>{pt}</li>)}
+              </ul>
             </div>
-            <ul className="project-points">
-              {p.points.map((pt) => <li key={pt}>{pt}</li>)}
-            </ul>
-          </article>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   )

@@ -8,6 +8,7 @@ export const profile = {
   gender: '男',
   age: 32,
   expectation: '期望岗位：FAE 工程师 · 北京 · 35-45K',
+  expectShort: '北京 · FAE 工程师 · 35-45K',
 }
 
 export const highlights = [
@@ -79,6 +80,7 @@ export const projects = [
   {
     period: '2026.06 - 至今',
     name: '京东云及零售项目',
+    tag: '云 · 零售 · POC',
     role: 'FAE 技术支持',
     points: [
       '主导京东云及零售业务场景 GPU 服务器 POC 技术支持：需求对接、送测准入、基准性能验证与大模型训练/推理适配，支撑客户技术选型落地',
@@ -89,6 +91,7 @@ export const projects = [
   {
     period: '2025.10 - 至今',
     name: '美团互联网客户 POC 项目',
+    tag: '互联网 · POC',
     role: 'FAE 技术支持',
     points: [
       '主导 GPU 服务器样机送测与基准准入测试，覆盖 Llama3 训练及 DeepSeek 671B 双机推理',
@@ -99,6 +102,7 @@ export const projects = [
   {
     period: '2025.04 - 至今',
     name: '快手互联网客户 POC 项目',
+    tag: '互联网 · POC',
     role: 'FAE 负责人',
     points: [
       '主导 GPU 板卡/服务器 POC 全流程验证，统筹送测准入与整机联调',
@@ -109,6 +113,7 @@ export const projects = [
   {
     period: '2025.10 - 至今',
     name: '中电科智能院 AI 算力集群 POC 与批量交付',
+    tag: '央国企 · 集群交付',
     role: 'FAE 技术支持',
     points: [
       '投标文件评分第一成功中标，负责控标项把控与技术优势梳理',
@@ -119,6 +124,7 @@ export const projects = [
   {
     period: '2022.03 - 2022.09',
     name: '紫光计算机 - 邮储集采项目',
+    tag: '金融 · 集采',
     role: 'FAE 技术支持',
     points: [
       '协助信创 GPU 产品需求调研与兼容性测试、投标材料筹备',
@@ -128,6 +134,7 @@ export const projects = [
   {
     period: '2023.02 - 2024.11',
     name: '紫光计算机 - 工行/移动集采项目',
+    tag: '金融 · 集采',
     role: 'FAE 技术支持',
     points: [
       '自研 GPU 图形卡针对工行、移动终端场景的适配验证与问题排查',
@@ -137,6 +144,7 @@ export const projects = [
   {
     period: '2024.02 - 2024.10',
     name: '东土科技 - 机器人项目',
+    tag: '机器人 · 适配',
     role: 'FAE 技术支持',
     points: [
       '联合高算力 SOC 芯片、ODM 厂商推进工业机器人软硬件适配',
@@ -146,6 +154,7 @@ export const projects = [
   {
     period: '2025.12 - 至今',
     name: '雅江集团建研院项目',
+    tag: '央国企 · 国产化',
     role: '业务和技术对接人',
     points: [
       '主导国产化图形工作站整体方案设计与测试验证体系搭建',
@@ -155,6 +164,7 @@ export const projects = [
   {
     period: '2021.12 - 至今',
     name: '公司大型展会产品支持',
+    tag: '品牌 · 展会支持',
     role: '产品支持',
     points: [
       '负责新品发布会、MDC 2025、WAIC 等 50+ 场次 demo 部署与现场讲解，零故障运行',
@@ -164,10 +174,10 @@ export const projects = [
 ]
 
 export const skills = [
-  { group: 'AI 算力', items: ['GPU 服务器 POC', '大模型适配', '训推调优', '集群部署', 'RoCE 组网'] },
-  { group: '硬件与测试', items: ['服务器整机测试', 'BIOS/BMC 固件', '可靠性测试', 'RMA 故障闭环', '兼容性验证'] },
-  { group: '系统与信创', items: ['Linux/麒麟', '国产化适配', '信创合规', '批量交付'] },
-  { group: 'Vibe Coding', items: ['AI 辅助开发', '自动化脚本', '快速原型', '数据看板'] },
+  { group: 'AI 算力', items: ['GPU 服务器 POC', '大模型适配', '训推调优', '集群部署', 'RoCE 组网'], levels: [0.96, 0.92, 0.88, 0.9, 0.85] },
+  { group: '硬件与测试', items: ['服务器整机测试', 'BIOS/BMC 固件', '可靠性测试', 'RMA 故障闭环', '兼容性验证'], levels: [0.94, 0.9, 0.92, 0.88, 0.9] },
+  { group: '系统与信创', items: ['Linux/麒麟', '国产化适配', '信创合规', '批量交付'], levels: [0.93, 0.89, 0.86, 0.91] },
+  { group: 'Vibe Coding', items: ['AI 辅助开发', '自动化脚本', '快速原型', '数据看板'], levels: [0.95, 0.93, 0.9, 0.86] },
 ]
 
 export const education = [

@@ -1,20 +1,57 @@
+import { useEffect, useRef } from 'react'
 import { vibe } from '../data/resume.js'
 
+const typingLines = [
+  'vibe-coding --tool 集群巡检脚本',
+  'vibe-coding --tool 每日大盘监控',
+  'vibe-coding --tool GPU 环境检测',
+]
+
 export default function VibeCoding() {
+  const cursorRef = useRef(null)
+  useEffect(() => {
+    let li = 0, ci = 0, timer
+    const el = cursorRef.current
+    const type = () => {
+      if (li >= typingLines.length) { timer = setTimeout(type, 4000); return }
+      const line = typingLines[li]
+      if (ci <= line.length) {
+        el.textContent = line.slice(0, ci++)
+        timer = setTimeout(type, 55)
+      } else {
+        li++; ci = 0
+        timer = setTimeout(() => { el.textContent = ''; type() }, 1300)
+      }
+    }
+    timer = setTimeout(type, 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <section id="vibe" className="container">
-      <div className="section-head">
-        <p className="kicker">// Vibe Coding</p>
-        <h2>AI 原生效率实践</h2>
-        <p>把 FAE 日常的重复劳动，用自然语言变成真正能用的工具。</p>
-      </div>
-      {vibe.works.length > 0 ? (
-        <div className="works-rail">
+    <section className="section" id="vibe">
+      <div className="container">
+        <div className="section-head reveal">
+          <span className="sec-index">05</span>
+          <h2>Vibe Coding</h2>
+          <span className="cn">AI 原生作品</span>
+        </div>
+        <div className="panel term reveal">
+          <div className="term-bar"><i /><i /><i /><span className="term-title">jack@jackzhou: ~/workspace</span></div>
+          <div className="term-body">
+            <div><span className="ln">01</span><span className="dim"># 我的 AI 原生效率工具箱</span></div>
+            <div><span className="ln">02</span><span className="cmd">$ vibe-coding --profile FAE</span></div>
+            <div><span className="ln">03</span><span className="ok">✔ 集群巡检脚本</span><span className="dim">    // 一键巡检 GPU 集群健康状态</span></div>
+            <div><span className="ln">04</span><span className="ok">✔ 每日大盘监控</span><span className="dim">    // 自动盯盘 + 行情看板</span></div>
+            <div><span className="ln">05</span><span className="dim">… 作品持续补充中</span></div>
+            <div className="term-typing"><span className="ln">&gt;</span> <span className="cmd" ref={cursorRef} /><span className="term-cursor" /></div>
+          </div>
+        </div>
+        <div className="works-grid">
           {vibe.works.map((w, i) => (
-            <article key={w.name} className="panel work-card">
+            <div key={w.name} className="panel work-card reveal">
               <div className="work-top">
                 <h3>{w.name}</h3>
-                <span className="mono work-num">WORK / {String(i + 1).padStart(2, '0')}</span>
+                <span className="work-num">WORK / {String(i + 1).padStart(2, '0')}</span>
               </div>
               <p>{w.desc}</p>
               {w.stats && (
@@ -24,19 +61,14 @@ export default function VibeCoding() {
               )}
               {w.tags && (
                 <div className="work-tags">
-                  {w.tags.map((t) => <span key={t} className="mono work-tag">{t}</span>)}
+                  {w.tags.map((t) => <span key={t} className="work-tag">{t}</span>)}
                 </div>
               )}
               {w.link && <a href={w.link} target="_blank" rel="noreferrer">查看作品 →</a>}
-            </article>
+            </div>
           ))}
         </div>
-      ) : (
-        <div className="panel work-placeholder">
-          <span className="mono placeholder-code">{"$ vibe coding works // 作品整理中"}</span>
-          <p>集群巡检脚本、股票盯盘看板等作品正在整理中，稍后加入。</p>
-        </div>
-      )}
+      </div>
     </section>
   )
 }

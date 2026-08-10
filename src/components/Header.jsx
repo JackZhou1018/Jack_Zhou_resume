@@ -1,36 +1,26 @@
-import { useState } from 'react'
-
 const links = [
-  ['优势', '#highlights'],
+  ['核心优势', '#about'],
   ['经历', '#experience'],
   ['项目', '#projects'],
   ['技能', '#skills'],
-  ['联系方式', '#contact'],
+  ['Vibe Coding', '#vibe'],
+  ['联系', '#contact'],
 ]
 
 export default function Header() {
-  const [open, setOpen] = useState(false)
   return (
     <header className="site-header">
       <div className="container header-inner">
-        <a className="brand" href="#top">
+        <div className="brand">
           <span className="brand-mark">JZ</span>
-          <span className="brand-name">Jack Zhou</span>
-        </a>
-        <nav className={`nav ${open ? 'nav-open' : ''}`}>
+          <span className="brand-name">JACK<em> ZHOU</em></span>
+        </div>
+        <nav className="nav">
           {links.map(([label, href]) => (
-            <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>
+            <a key={href} href={href}>{label}</a>
           ))}
-          <a className="nav-cta" href="#contact" onClick={() => setOpen(false)}>联系我</a>
         </nav>
-        <button
-          className="nav-toggle"
-          aria-label="切换导航"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          <span /><span /><span />
-        </button>
+        <span className="status-chip"><i />OPEN TO WORK</span>
       </div>
     </header>
   )
