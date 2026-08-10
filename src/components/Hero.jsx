@@ -1,5 +1,5 @@
-import avatar from '../assets/avatar.png'
-import heroBg from '../assets/hero-bg.png'
+import avatar from '../assets/avatar.webp'
+import heroBg from '../assets/hero-bg.webp'
 
 export default function Hero() {
   return (
