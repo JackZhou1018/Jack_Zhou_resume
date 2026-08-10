@@ -21,7 +21,22 @@ export const vibe = {
   title: 'AI 原生效率方法（Vibe Coding）',
   desc: '熟练使用自然语言驱动的 AI 辅助编程，将 FAE 日常重复劳动快速工具化：GPU 环境检测、测试脚本生成、故障诊断小工具、数据看板等，以小时级速度产出可用工具。',
   tags: ['AI 辅助开发', '快速原型', '自动化脚本', 'Prompt Engineering', '工具化思维'],
-  works: [],
+  works: [
+    {
+      name: 'KIMI3 集群节点巡检工具',
+      desc: '面向 8 节点 MUSA/GPU 集群的「起飞门禁」巡检：单入口完成宿主机取证、MUSA/通信检查、门禁判定、离线 HTML 报告、证据包与节点隔离建议，安全边界内不修改任何系统配置。',
+      stats: ['8 节点', '43 项检查', '56/56 SSH mesh', 'GO/NO-GO 门禁'],
+      tags: ['Python', '并发采集', '离线报告', '门禁判定', '安全取证'],
+      link: null,
+    },
+    {
+      name: '服务器故障日志一键收集',
+      desc: 'S5000 服务器故障现场一键取证：系统信息、dmesg、journalctl、GPU 状态、驱动模块、GCD 错误转存、容器与网络日志自动采集打包，附敏感信息脱敏提醒。',
+      stats: ['8+ 类证据', '一键打包', '故障现场取证'],
+      tags: ['Bash', '日志采集', '自动打包', '故障定位'],
+      link: null,
+    },
+  ],
 }
 
 export const experiences = [

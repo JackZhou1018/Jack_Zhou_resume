@@ -10,10 +10,23 @@ export default function VibeCoding() {
       </div>
       {vibe.works.length > 0 ? (
         <div className="works-rail">
-          {vibe.works.map((w) => (
+          {vibe.works.map((w, i) => (
             <article key={w.name} className="panel work-card">
-              <h3>{w.name}</h3>
+              <div className="work-top">
+                <h3>{w.name}</h3>
+                <span className="mono work-num">WORK / {String(i + 1).padStart(2, '0')}</span>
+              </div>
               <p>{w.desc}</p>
+              {w.stats && (
+                <div className="work-stats">
+                  {w.stats.map((st) => <span key={st} className="work-stat">{st}</span>)}
+                </div>
+              )}
+              {w.tags && (
+                <div className="work-tags">
+                  {w.tags.map((t) => <span key={t} className="mono work-tag">{t}</span>)}
+                </div>
+              )}
               {w.link && <a href={w.link} target="_blank" rel="noreferrer">查看作品 →</a>}
             </article>
           ))}
