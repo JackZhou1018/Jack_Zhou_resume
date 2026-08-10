@@ -77,6 +77,16 @@ export const experiences = [
 
 export const projects = [
   {
+    period: '2026.06 - 至今',
+    name: '京东云及零售项目',
+    role: 'FAE 技术支持',
+    points: [
+      '主导京东云及零售业务场景 GPU 服务器 POC 技术支持：需求对接、送测准入、基准性能验证与大模型训练/推理适配，支撑客户技术选型落地',
+      '负责 500+ 台 AI 服务器批量交付：系统安装（麒麟/Ubuntu）、GPU 驱动部署、RoCE 网络组网与故障闭环管理',
+      '沉淀标准化交付与测试流程，跨部门协同保障客户业务平稳上线',
+    ],
+  },
+  {
     period: '2025.10 - 至今',
     name: '美团互联网客户 POC 项目',
     role: 'FAE 技术支持',
