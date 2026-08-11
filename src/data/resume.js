@@ -37,6 +37,13 @@ export const vibe = {
       tags: ['Bash', '日志采集', '自动打包', '故障定位'],
       link: null,
     },
+    {
+      name: 'GPU 集群运维脚本集',
+      desc: '25+ 个可复用集群运维脚本，cluster_ops.sh 统一入口：一键巡检、SSH 全互信、hostname 治理、yum/dkms 环境修复、SDK 同步、模型下载监控与 RoCE/IB 诊断；新集群替换 hostfile 即可复用，修改类操作默认 dry-run 保护。',
+      stats: ['25+ 脚本', '统一入口', 'dry-run 安全', '开箱复用'],
+      tags: ['Shell', '集群运维', 'SOP 沉淀', '自动化'],
+      link: null,
+    },
   ],
 }
 
