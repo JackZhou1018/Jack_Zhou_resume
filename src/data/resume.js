@@ -44,6 +44,13 @@ export const vibe = {
       tags: ['Shell', '集群运维', 'SOP 沉淀', '自动化'],
       link: null,
     },
+    {
+      name: '每日盯盘 · 3D Market Deck',
+      desc: '自己开发的国内盘每日盯盘网页：自动抓取大盘行情并以 3D 可视化呈现，深色科技风实时看板，替代人工盯盘。',
+      stats: ['实时行情', '3D 可视化', '自动盯盘'],
+      tags: ['Web', '数据可视化', '自动化', '3D'],
+      link: 'https://jackzhou1018.github.io/-/',
+    },
   ],
 }
 
