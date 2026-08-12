@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>摩尔线程 · 全功能 GPU 产品介绍</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES (from STYLE_PRESETS)
+   ============================================================ */
+html {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+}
+
+:root {
+    /* Neon Cyber theme tokens */
+    --bg: #070b16;
+    --ink: #e8f3ff;
+    --muted: #8fa3c7;
+    --cyan: #00e5ff;
+    --magenta: #ff2e97;
+    --violet: #7a5cff;
+    --line: rgba(120, 190, 255, 0.16);
+    --card: rgba(16, 26, 50, 0.62);
+    --card-line: rgba(0, 229, 255, 0.28);
+
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+
+    --font-display: "Clash Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-body: "Satoshi", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Background layers (fixed, decorative) ---------- */
+.bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+        linear-gradient(rgba(120, 190, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 190, 255, 0.07) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 30%, transparent 100%);
+    pointer-events: none;
+}
+
+.bg-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg-glow::before,
+.bg-glow::after {
+    content: "";
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.16;
+}
+
+.bg-glow::before {
+    background: var(--cyan);
+    top: -18vmax;
+    left: -12vmax;
+    animation: drift 18s ease-in-out infinite alternate;
+}
+
+.bg-glow::after {
+    background: var(--magenta);
+    bottom: -20vmax;
+    right: -14vmax;
+    animation: drift 22s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(5vmax, 3vmax, 0) scale(1.12); }
+}
+
+#particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+main#deck {
+    position: relative;
+    z-index: 2;
+}
+
+/* ---------- Shared slide pieces ---------- */
+.kicker {
+    font-family: var(--font-body);
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    font-size: var(--small-size);
+    color: var(--cyan);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: var(--element-gap);
+}
+
+.kicker::before {
+    content: "";
+    width: 2.2em;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+}
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--h2-size);
+    line-height: 1.18;
+    letter-spacing: 0.01em;
+    margin-bottom: var(--content-gap);
+}
+
+.slide-title em {
+    font-style: normal;
+    background: linear-gradient(92deg, var(--cyan) 10%, var(--magenta) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.ghost-num {
+    position: absolute;
+    right: clamp(0.5rem, 3vw, 3rem);
+    bottom: clamp(0.5rem, 3vh, 2.5rem);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3.5rem, 15vh, 9rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0, 229, 255, 0.18);
+    user-select: none;
+    pointer-events: none;
+}
+
+.card, .container, .content-box {
+    max-width: min(90vw, 1000px);
+    max-height: min(80vh, 700px);
+}
+
+.feature-list, .bullet-list {
+    gap: clamp(0.4rem, 1vh, 1rem);
+}
+
+.feature-list li, .bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.4;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* ---------- Card styling ---------- */
+.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: clamp(0.7rem, 1.4vw, 1.2rem);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(0, 229, 255, 0.08), transparent 38%);
+    pointer-events: none;
+}
+
+.card:hover {
+    border-color: var(--card-line);
+    transform: translateY(-2px);
+}
+
+.card .tag {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--small-size);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+}
+
+.card h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(0.9rem, 1.8vw, 1.35rem);
+    line-height: 1.25;
+}
+
+.card p {
+    font-size: var(--small-size);
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+.card .big {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    color: var(--ink);
+    line-height: 1.1;
+}
+
+.card .big span {
+    color: var(--cyan);
+}
+
+/* ---------- Reveal animations ---------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: calc(var(--i, 0) * 90ms);
+    will-change: opacity, transform;
+}
+
+.slide.in .reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---------- Cover slide ---------- */
+.cover {
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.cover .slide-content {
+    align-items: center;
+    justify-content: center;
+}
+
+.cover .kicker::before { display: none; }
+
+.cover h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 7vw, 5.4rem);
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.35em;
+}
+
+.cover h1 .accent {
+    background: linear-gradient(92deg, var(--cyan), var(--violet) 55%, var(--magenta));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.cover .sub {
+    font-size: clamp(1rem, 2.6vw, 1.7rem);
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: clamp(0.9rem, 2.5vh, 1.6rem);
+}
+
+.cover .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.4rem, 1.2vw, 0.8rem);
+    margin-bottom: clamp(0.8rem, 2.4vh, 1.6rem);
+}
+
+.cover .meta span {
+    font-size: var(--small-size);
+    color: var(--ink);
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    border-radius: 999px;
+    padding: 0.35em 0.9em;
+    letter-spacing: 0.06em;
+}
+
+.cover .ticker {
+    font-family: var(--font-body);
+    font-size: var(--small-size);
+    color: var(--muted);
+    letter-spacing: 0.24em;
+}
+
+.scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+    opacity: 0.7;
+    animation: scan 7s linear infinite;
+}
+
+@keyframes scan {
+    from { top: 8%; }
+    to   { top: 90%; }
+}
+
+/* ---------- Stat rows ---------- */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.stat-row .card .big {
+    font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+}
+
+.eco-grid {
+    grid-template-columns: 1.6fr 1fr;
+    align-items: stretch;
+}
+
+.stat-col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.stat-col .card {
+    flex: 1;
+    justify-content: center;
+}
+
+/* ---------- Timeline ---------- */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 0.8vh, 0.6rem);
+    position: relative;
+    padding-left: 1.1em;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 0.2em;
+    bottom: 0.2em;
+    width: 2px;
+    background: linear-gradient(var(--cyan), var(--magenta));
+    opacity: 0.65;
+}
+
+.tl-item {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.6rem, 1.5vw, 1.2rem);
+    position: relative;
+    font-size: var(--body-size);
+    line-height: 1.35;
+}
+
+.tl-item::before {
+    content: "";
+    position: absolute;
+    left: -1.1em;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--cyan);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.7);
+}
+
+.tl-item .year {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--cyan);
+    white-space: nowrap;
+    font-size: var(--body-size);
+}
+
+.tl-item p {
+    color: var(--muted);
+}
+
+.tl-item p strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+/* ---------- Dots / progress / counter / hint ---------- */
+.deck-dots {
+    position: fixed;
+    right: clamp(0.6rem, 1.6vw, 1.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.deck-dots button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 229, 255, 0.5);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.deck-dots button.active {
+    background: var(--cyan);
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+    transform: scale(1.25);
+}
+
+.deck-dots button:focus-visible {
+    outline: 2px solid var(--magenta);
+    outline-offset: 2px;
+}
+
+.deck-progress {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.deck-progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    transition: width 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.deck-counter {
+    position: fixed;
+    left: clamp(0.8rem, 2vw, 1.6rem);
+    bottom: clamp(0.7rem, 2vh, 1.4rem);
+    z-index: 20;
+    font-family: var(--font-body);
+    font-size: var(--small-size);
+    letter-spacing: 0.2em;
+    color: var(--muted);
+}
+
+.deck-counter b {
+    color: var(--cyan);
+    font-weight: 700;
+}
+
+.keyboard-hint {
+    position: fixed;
+    right: clamp(0.8rem, 2vw, 1.6rem);
+    bottom: clamp(0.7rem, 2vh, 1.4rem);
+    z-index: 20;
+    font-size: var(--small-size);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+}
+
+/* ---------- Responsive breakpoints ---------- */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+    }
+}
+
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+
+    .keyboard-hint, .decorative {
+        display: none;
+    }
+}
+
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+
+    .deck-dots, .keyboard-hint, .decorative {
+        display: none;
+    }
+
+    .ghost-num { display: none; }
+
+    .timeline {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1.2rem;
+        padding-left: 1em;
+    }
+
+    .grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --title-size: clamp(1.25rem, 7vw, 2.5rem);
+        --content-gap: clamp(0.35rem, 1vw, 0.6rem);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+
+    .card {
+        padding: 0.55rem 0.75rem;
+        gap: 0.3em;
+    }
+
+    .card h3 {
+        font-size: 0.88rem;
+    }
+
+    .card p {
+        font-size: 0.62rem;
+        line-height: 1.4;
+    }
+
+    .slide-title {
+        margin-bottom: 0.55rem;
+    }
+
+    .kicker {
+        margin-bottom: 0.35rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow" aria-hidden="true"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+
+<main id="deck">
+
+  <!-- 01 封面 -->
+  <section class="slide cover" aria-label="封面：摩尔线程 全功能 GPU 产品介绍">
+    <div class="scanline decorative" aria-hidden="true"></div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Moore Threads · 科创板 688795</p>
+      <h1 class="reveal" style="--i:1">国产全功能 GPU <span class="accent">创领者</span></h1>
+      <p class="sub reveal" style="--i:2">为美好世界加速 · Accelerate Computing for the Future</p>
+      <div class="meta reveal" style="--i:3">
+        <span>MUSA 统一系统架构</span>
+        <span>KUAE 夸娥智算集群</span>
+        <span>MTT S 系列全功能 GPU</span>
+      </div>
+      <p class="ticker reveal" style="--i:4">产品矩阵：消费级显卡 · 专业视觉 · AI 智算 · 智算集群 · 软件生态 · 应用模型</p>
+    </div>
+  </section>
+
+  <!-- 02 行业背景 -->
+  <section class="slide" aria-label="行业背景">
+    <div class="ghost-num" aria-hidden="true">02</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Why Universal GPU</p>
+      <h2 class="slide-title reveal" style="--i:1">AI 时代，<em>算力成为核心基础设施</em></h2>
+      <ul class="bullet-list feature-list reveal" style="--i:2">
+        <li><strong>大模型参数跃升：</strong>万亿参数模型训练与推理需求爆发，GPU 算力供不应求</li>
+        <li><strong>负载多元化：</strong>AI 计算、3D 图形渲染、视频编解码、物理仿真与科学计算需要一张「全功能」GPU</li>
+        <li><strong>自主可控：</strong>国产 GPU 替代成为产业刚需，从「可用」走向「好用」</li>
+        <li><strong>政策与资本共振：</strong>科创板成为硬科技主阵地，国产算力企业密集上市</li>
+      </ul>
+      <div class="stat-row reveal" style="--i:3">
+        <div class="card"><p class="big">万亿<span>+</span></p><p>大模型参数规模</p></div>
+        <div class="card"><p class="big">5 类</p><p>核心计算负载</p></div>
+        <div class="card"><p class="big">688795</p><p>国产 GPU 科创板代表</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 公司概览 -->
+  <section class="slide" aria-label="公司概览">
+    <div class="ghost-num" aria-hidden="true">03</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">About Moore Threads</p>
+      <h2 class="slide-title reveal" style="--i:1">从芯片到集群，<em>构建智算底座</em></h2>
+      <div class="stat-row reveal" style="--i:2">
+        <div class="card"><p class="big">15.05<span> 亿</span></p><p>2025 营收（+243%）</p></div>
+        <div class="card"><p class="big">1009</p><p>研发人员</p></div>
+        <div class="card"><p class="big">1854</p><p>累计专利申请</p></div>
+        <div class="card"><p class="big">688795</p><p>科创板上市代码</p></div>
+        <div class="card"><p class="big">2020</p><p>公司成立</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:3">
+        <li><strong>全栈体系：</strong>围绕自研 MUSA 架构构建「芯片 + 软件 + 平台」，覆盖 AI、图形、视频与科学计算</li>
+        <li><strong>云边端布局：</strong>产品横跨云端智算、专业图形、桌面图形与端侧 SoC</li>
+        <li><strong>国家认证：</strong>国家高新技术企业 · 北京市独角兽 · “专精特新”企业</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 发展里程碑 -->
+  <section class="slide" aria-label="发展里程碑">
+    <div class="ghost-num" aria-hidden="true">04</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Milestones</p>
+      <h2 class="slide-title reveal" style="--i:1">六年跃迁，<em>国产 GPU 崛起之路</em></h2>
+      <div class="timeline reveal" style="--i:2">
+        <div class="tl-item"><span class="year">2020.10</span><p>正式运营，踏上全功能 GPU 自研之路</p></div>
+        <div class="tl-item"><span class="year">2022.03</span><p>发布 <strong>MUSA 统一系统架构</strong>与 MTT S 系列显卡</p></div>
+        <div class="tl-item"><span class="year">2022.11</span><p>「春晓」芯片与国内首款游戏显卡 <strong>MTT S80</strong></p></div>
+        <div class="tl-item"><span class="year">2023.09</span><p>「曲院」芯片、<strong>MTT S4000</strong> 与 KUAE 千卡集群</p></div>
+        <div class="tl-item"><span class="year">2023.12</span><p>首个全国产「千卡 · 千亿参数」训练平台落地</p></div>
+        <div class="tl-item"><span class="year">2024.07</span><p>KUAE 夸娥从千卡扩展至 <strong>万卡规模</strong></p></div>
+        <div class="tl-item"><span class="year">2025.12</span><p>科创板上市（<strong>688795</strong>），发布「花港」架构与「华山」芯片</p></div>
+        <div class="tl-item"><span class="year">2026.02</span><p><strong>MTT S5000</strong> 规模化量产，2025 营收 15.05 亿元</p></div>
+        <div class="tl-item"><span class="year">2026.05</span><p>云边端发布会：<strong>AICUBE</strong>、全域智能体「小麦」</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 MUSA 核心技术 -->
+  <section class="slide" aria-label="MUSA 核心技术">
+    <div class="ghost-num" aria-hidden="true">05</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Core Technology</p>
+      <h2 class="slide-title reveal" style="--i:1">MUSA 元计算 <em>统一系统架构</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">Unified Model</p>
+          <h3>统一编程模型</h3>
+          <p>一套代码同时驾驭 AI 训推、图形渲染、视频编解码与科学计算，降低多场景开发门槛。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">4 Gen Evolution</p>
+          <h3>四代架构演进</h3>
+          <p>从第一代 MUSA 到「春晓」「曲院」「平湖」，再到新一代「花港」，持续迭代。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">Full Precision</p>
+          <h3>全精度计算</h3>
+          <p>「花港」架构支持 FP4 到 FP64 全精度，覆盖训练、推理与科学计算。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">Ecosystem</p>
+          <h3>软硬协同生态</h3>
+          <p>驱动月度优化、GPU 虚拟化、云原生套件，适配 x86 / Arm / LoongArch。</p>
+        </div>
+      </div>
+      <p class="kicker reveal" style="--i:6">原生支持 PyTorch · Megatron-LM · vLLM · SGLang，大模型 Day-0 适配</p>
+    </div>
+  </section>
+
+  <!-- 06 自研芯片家族 -->
+  <section class="slide" aria-label="自研芯片家族">
+    <div class="ghost-num" aria-hidden="true">06</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Self-developed Chips</p>
+      <h2 class="slide-title reveal" style="--i:1">自研芯片家族，<em>覆盖全场景</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">ChunXiao · 2022</p>
+          <h3>春晓</h3>
+          <p>驱动国内首款游戏显卡 MTT S80 与桌面产品线，奠定全功能 GPU 基础。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">QuYuan · 2023</p>
+          <h3>曲院</h3>
+          <p>面向大模型训推，支撑 MTT S4000 与 KUAE 千卡集群。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">PingHu · 4th Gen</p>
+          <h3>平湖</h3>
+          <p>第四代 MUSA 架构，驱动 MTT S5000：1000 TFLOPS 稠密算力。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">HuaShan · 2025</p>
+          <h3>华山</h3>
+          <p>新一代架构支持十万卡级 AI 工厂，兼容 MTLink 4.0，片间互联 1314GB/s。</p>
+        </div>
+      </div>
+      <p class="kicker reveal" style="--i:6">自研 MTLink 高速互联：S4000 卡间 I/O 带宽 240GB/s</p>
+    </div>
+  </section>
+
+  <!-- 07 产品矩阵 -->
+  <section class="slide" aria-label="产品矩阵">
+    <div class="ghost-num" aria-hidden="true">07</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Product Portfolio</p>
+      <h2 class="slide-title reveal" style="--i:1">六大产品线，<em>覆盖全场景算力</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">Consumer</p>
+          <h3>消费级显卡</h3>
+          <p>MTT S80 / S70，游戏、创作与 8K 影音体验。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">Professional</p>
+          <h3>专业视觉卡</h3>
+          <p>MTT X300 / S2000，3D 渲染与多屏行业应用。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">AI Computing</p>
+          <h3>AI 智算卡</h3>
+          <p>MTT S4000 / S5000，大模型训练、微调与推理。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">Cluster</p>
+          <h3>融合智算中心</h3>
+          <p>KUAE 夸娥，千卡至万卡规模的智算集群。</p>
+        </div>
+        <div class="card reveal" style="--i:6">
+          <p class="tag">Devices</p>
+          <h3>系统与设备</h3>
+          <p>SGX5000 / AIBOOK / AICUBE / E300 边缘 AI 模组。</p>
+        </div>
+        <div class="card reveal" style="--i:7">
+          <p class="tag">Software</p>
+          <h3>软件生态</h3>
+          <p>MUSA SDK、训推套件、GPU 虚拟化与云原生工具链。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 消费级显卡 -->
+  <section class="slide" aria-label="消费级显卡">
+    <div class="ghost-num" aria-hidden="true">08</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Consumer GPUs</p>
+      <h2 class="slide-title reveal" style="--i:1">MTT S80 · <em>国产游戏显卡里程碑</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">4096<span> MUSA 核心</span></p><p>完整「春晓」芯片规格</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">14.7<span> TFLOPS</span></p><p>FP32 单精度算力</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">16<span> GB</span></p><p>GDDR6 高速显存</p></div>
+        <div class="card reveal" style="--i:5"><p class="big">Gen5<span> · 8K</span></p><p>PCIe x16 · 显示输出</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:6">
+        <li><strong>国内首款公开发售的国产游戏显卡</strong>，支持 DirectX 12 / OpenGL / Vulkan / OpenCL 等主流 API</li>
+        <li><strong>驱动月度更新</strong>，持续优化热门游戏与应用兼容性</li>
+        <li><strong>同系列 MTT S70：</strong>7GB GDDR6 · 392GB/s 带宽，另有智娱摩方整机方案</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 09 专业视觉与整机 -->
+  <section class="slide" aria-label="专业视觉与整机方案">
+    <div class="ghost-num" aria-hidden="true">09</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Professional &amp; Office</p>
+      <h2 class="slide-title reveal" style="--i:1">专业视觉卡，<em>助力行业国产化</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">MTT X300</p>
+          <h3>专业渲染卡</h3>
+          <p>高性能 3D 渲染、领先的视频编解码与超高清多屏能力。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">MTT S2000</p>
+          <h3>全能专业卡</h3>
+          <p>支持图形、AI、音视频编解码与科学计算，适配 x86 / Arm / LoongArch。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">智娱摩方</p>
+          <h3>游戏整机</h3>
+          <p>玩家畅享游戏、开发者便捷体验摩尔线程显卡的一体化平台。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">MCCX 一体机</p>
+          <h3>元计算 / VDI</h3>
+          <p>元计算一体机与 VDI 云桌面一体机，覆盖数字办公与云端桌面。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 AI 智算卡 -->
+  <section class="slide" aria-label="AI 智算卡">
+    <div class="ghost-num" aria-hidden="true">10</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">AI Accelerators</p>
+      <h2 class="slide-title reveal" style="--i:1">AI 智算卡，<em>为大模型而生</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">1000<span> TFLOPS</span></p><p>S5000 稠密算力（FP8）</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">80<span> GB</span></p><p>S5000 显存</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">1.6<span> TB/s</span></p><p>S5000 显存带宽</p></div>
+        <div class="card reveal" style="--i:5"><p class="big">FP8<span> → FP64</span></p><p>全精度计算支持</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:6">
+        <li><strong>MTT S5000：</strong>第四代 MUSA「平湖」，原生支持 PyTorch / Megatron-LM / vLLM / SGLang，DeepSeek-V4、Qwen3.5、GLM-5.1 等大模型 Day-0 适配</li>
+        <li><strong>MTT S4000：</strong>基于「曲院」，48GB 显存，训推一体，MTLink 多卡互联，支持千卡集群部署</li>
+        <li><strong>通过验证：</strong>S4000 通过中国信通院 AI 芯片与大模型适配验证</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 11 云与虚拟化 -->
+  <section class="slide" aria-label="云与虚拟化">
+    <div class="ghost-num" aria-hidden="true">11</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Cloud &amp; Virtualization</p>
+      <h2 class="slide-title reveal" style="--i:1">MTT S3000 · <em>云与虚拟化</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">4096</p><p>MUSA 核心</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">128</p><p>张量计算单元</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">32<span> 路</span></p><p>单卡 vGPU 并发</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:5">
+        <li><strong>GPU 虚拟化：</strong>动态弹性切分，高密度 vGPU，资源隔离且高效利用</li>
+        <li><strong>云场景：</strong>云手机、云渲染、视频云、云桌面全场景加速</li>
+        <li><strong>生态兼容：</strong>广泛兼容主流虚拟化平台与操作系统</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 12 KUAE 夸娥智算集群 -->
+  <section class="slide" aria-label="KUAE 夸娥智算集群">
+    <div class="ghost-num" aria-hidden="true">12</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">KUAE Cluster</p>
+      <h2 class="slide-title reveal" style="--i:1">KUAE 夸娥，<em>万卡智算集群</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">万卡级</p><p>集群已成功落地</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">10<span> ExaFLOPS</span></p><p>集群浮点算力</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">60%<span> / 40%</span></p><p>MFU（Dense / MoE）</p></div>
+        <div class="card reveal" style="--i:5"><p class="big">95%</p><p>训练线性扩展效率</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:6">
+        <li><strong>万亿参数训练：</strong>有效训练时长超 90%，支撑超大模型稳定训练</li>
+        <li><strong>主流模型适配：</strong>支持 DeepSeek V3 / R1 等大模型分布式部署</li>
+        <li><strong>一体化交付：</strong>智算加速卡 + 训推一体机，解决大规模算力建设与运营管理</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 13 智算基础设施 -->
+  <section class="slide" aria-label="智算基础设施">
+    <div class="ghost-num" aria-hidden="true">13</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">AI Infrastructure</p>
+      <h2 class="slide-title reveal" style="--i:1">从互联到交付的<em>智算基础设施</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">MTLink</p>
+          <h3>卡间高速互联</h3>
+          <p>S4000 支持 2/4/8 卡 Bridge 互连，卡间 I/O 带宽 240GB/s，加速 64→1024 卡训练。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">MCCX D800 X1</p>
+          <h3>AI 训推一体机</h3>
+          <p>大模型训练与推理一体化交付，开箱即用的算力节点。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">MTT SGX5000</p>
+          <h3>智算服务器</h3>
+          <p>面向训练集群与推理场景深度优化的服务器系统。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">KUAE Cloud-native</p>
+          <h3>云原生套件</h3>
+          <p>支持容器与 Kubernetes，自动化部署、弹性调度与智能监控。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 开发者工具链 -->
+  <section class="slide" aria-label="开发者工具链">
+    <div class="ghost-num" aria-hidden="true">14</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Software · Developers</p>
+      <h2 class="slide-title reveal" style="--i:1">开发者工具链，<em>降低迁移门槛</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">MUSA SDK</p>
+          <h3>编译器与运行时</h3>
+          <p>编译器、运行时库、调试工具与 API，快速开发并行计算应用。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">MUSIFY</p>
+          <h3>代码移植工具</h3>
+          <p>将既有并行计算应用平滑迁移到 MUSA，降低生态迁移成本。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">MUSACODE</p>
+          <h3>AI 辅助编程</h3>
+          <p>自然语言交互辅助 Kernel / TileLang 算子开发、调试与重构。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">Perf System</p>
+          <h3>性能分析</h3>
+          <p>可视化分析多种图形与计算 API，快速定位瓶颈并深度优化。</p>
+        </div>
+        <div class="card reveal" style="--i:6">
+          <p class="tag">Driver</p>
+          <h3>驱动月度优化</h3>
+          <p>每月推出游戏与应用专项优化，性能与兼容性双提升。</p>
+        </div>
+        <div class="card reveal" style="--i:7">
+          <p class="tag">PES 控制中心</p>
+          <h3>显卡管理</h3>
+          <p>第一时间获取驱动、实时监控显卡状态，尽享流畅体验。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 训推套件与行业软件 -->
+  <section class="slide" aria-label="训推套件与行业软件">
+    <div class="ghost-num" aria-hidden="true">15</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Software · AI &amp; Industry</p>
+      <h2 class="slide-title reveal" style="--i:1">训推套件与<em>行业软件</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">Training Suite</p>
+          <h3>KUAE Training</h3>
+          <p>面向生产级 AI 训练的工具与框架，加速训练与微调过程。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">Inference Suite</p>
+          <h3>KUAE Inference</h3>
+          <p>加速大模型在生产环境的部署与执行，降低推理延迟。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">Virtualization</p>
+          <h3>GPU 虚拟化</h3>
+          <p>动态弹性 vGPU 切分，资源隔离与高效利用。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">Scientific</p>
+          <h3>科学计算套件</h3>
+          <p>数学库、编程模型与行业应用，支撑科研与高精尖企业。</p>
+        </div>
+        <div class="card reveal" style="--i:6">
+          <p class="tag">Smart Media</p>
+          <h3>视频与媒体</h3>
+          <p>视频编解码、转码、直播，覆盖云游戏 / 云桌面 / 云渲染。</p>
+        </div>
+        <div class="card reveal" style="--i:7">
+          <p class="tag">MTVerse XR</p>
+          <h3>XR 流式传输</h3>
+          <p>OpenXR 应用经网络与 USB 流式传输，低延时高质量 XR。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 应用与模型 -->
+  <section class="slide" aria-label="应用与模型">
+    <div class="ghost-num" aria-hidden="true">16</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Apps &amp; Models</p>
+      <h2 class="slide-title reveal" style="--i:1">自研应用与模型，<em>验证全栈能力</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">摩笔马良</p>
+          <h3>AIGC 绘画助手</h3>
+          <p>基于自研 GPU 与 AI 的高质量图像生成与创意辅助。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">MooER 摩耳</p>
+          <h3>语音处理</h3>
+          <p>高精度语音识别与合成，赋能智能语音交互。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">MUSAChat</p>
+          <h3>大语言模型</h3>
+          <p>摩尔线程自研大语言模型，驱动智能对话服务。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">DigitalME</p>
+          <h3>数字人方案</h3>
+          <p>依托夸娥集群的 LLM 服务，支持音色复刻与精品定制。</p>
+        </div>
+        <div class="card reveal" style="--i:6">
+          <p class="tag">小麦智能体</p>
+          <h3>全域智能体</h3>
+          <p>2026 发布，贯通家庭与端侧场景的 AI 助手。</p>
+        </div>
+        <div class="card reveal" style="--i:7">
+          <p class="tag">AlphaCore</p>
+          <h3>物理引擎</h3>
+          <p>自研物理引擎，支撑数字孪生与仿真应用。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 端侧与家庭 -->
+  <section class="slide" aria-label="端侧与家庭">
+    <div class="ghost-num" aria-hidden="true">17</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Edge &amp; Home</p>
+      <h2 class="slide-title reveal" style="--i:1">端侧新品：<em>算力走进家庭</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">50<span> TOPS</span></p><p>本地 AI 算力</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">32<span> GB</span></p><p>高速内存</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">长江<span> SoC</span></p><p>全大核 CPU + 全功能 GPU + 双核 NPU</p></div>
+      </div>
+      <div class="grid">
+        <div class="card reveal" style="--i:5">
+          <p class="tag">MTT AICUBE</p>
+          <h3>家庭 AI 中枢</h3>
+          <p>融合 AI PC、AI NAS 与智能交互：本地大模型、跨设备联动、8K 影音、私有云存储、安卓生态游戏。</p>
+        </div>
+        <div class="card reveal" style="--i:6">
+          <p class="tag">MTT AIBOOK</p>
+          <h3>AI 算力本</h3>
+          <p>搭载国产强芯，支持多系统，助力智能体持续进化。</p>
+        </div>
+        <div class="card reveal" style="--i:7">
+          <p class="tag">MTT E300</p>
+          <h3>边缘 AI 模组</h3>
+          <p>GPU / CPU / NPU 多核异构，高算力、低延迟、可靠国产化边缘方案。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 解决方案 -->
+  <section class="slide" aria-label="行业解决方案">
+    <div class="ghost-num" aria-hidden="true">18</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Solutions</p>
+      <h2 class="slide-title reveal" style="--i:1">行业解决方案，<em>加速场景落地</em></h2>
+      <div class="grid">
+        <div class="card reveal" style="--i:2">
+          <p class="tag">Cloud Gaming</p>
+          <h3>云游戏</h3>
+          <p>以 GPU 虚拟化与视频加速支撑高质量云游戏体验。</p>
+        </div>
+        <div class="card reveal" style="--i:3">
+          <p class="tag">Cloud Desktop</p>
+          <h3>云桌面 / 云渲染</h3>
+          <p>MCCX VDI 云桌面与渲染服务，覆盖数字办公与专业设计。</p>
+        </div>
+        <div class="card reveal" style="--i:4">
+          <p class="tag">Digital Human</p>
+          <h3>数字人</h3>
+          <p>DigitalME 全链路定制：音色复刻、大模型对话、形象生成。</p>
+        </div>
+        <div class="card reveal" style="--i:5">
+          <p class="tag">3D Reconstruction</p>
+          <h3>AI 三维重建</h3>
+          <p>自研 3DGS 方案：厘米级精度、十亿级模型、城市级场景实时渲染。</p>
+        </div>
+      </div>
+      <p class="kicker reveal" style="--i:6">延伸场景：数字孪生 · 物理仿真（AlphaCore）· 视频云 · 元宇宙</p>
+    </div>
+  </section>
+
+  <!-- 19 生态与开发者 -->
+  <section class="slide" aria-label="生态与开发者">
+    <div class="ghost-num" aria-hidden="true">19</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Ecosystem</p>
+      <h2 class="slide-title reveal" style="--i:1">生态开放，<em>与开发者同行</em></h2>
+      <div class="grid eco-grid">
+        <ul class="bullet-list feature-list reveal" style="--i:2">
+          <li><strong>框架原生支持：</strong>PyTorch、Megatron-LM、vLLM、SGLang 等 Day-0 适配</li>
+          <li><strong>大模型适配：</strong>DeepSeek-V4、Qwen3.5、GLM-5.1 等发布即适配</li>
+          <li><strong>硬件生态：</strong>适配 x86 / Arm / LoongArch CPU 与主流虚拟化平台</li>
+          <li><strong>OEM 伙伴：</strong>AOC、戴尔、飞利浦、浪潮、长城、海尔等</li>
+          <li><strong>开发者体系：</strong>博士后科研工作站 + MUSA 开发者社区</li>
+        </ul>
+        <div class="stat-col reveal" style="--i:3">
+          <div class="card"><p class="big">1009</p><p>研发人员</p></div>
+          <div class="card"><p class="big">1854</p><p>累计专利申请（发明 1743）</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 资本市场与经营 -->
+  <section class="slide" aria-label="资本市场与经营表现">
+    <div class="ghost-num" aria-hidden="true">20</div>
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Capital &amp; Finance</p>
+      <h2 class="slide-title reveal" style="--i:1">资本市场与<em>经营表现</em></h2>
+      <div class="stat-row">
+        <div class="card reveal" style="--i:2"><p class="big">688795</p><p>科创板上市（2025.12）</p></div>
+        <div class="card reveal" style="--i:3"><p class="big">114.28<span> 元</span></p><p>IPO 发行价</p></div>
+        <div class="card reveal" style="--i:4"><p class="big">15.05<span> 亿</span></p><p>2025 营收（+243%）</p></div>
+        <div class="card reveal" style="--i:5"><p class="big">+2900<span> 万</span></p><p>2026 Q1 净利润（扭亏）</p></div>
+      </div>
+      <ul class="bullet-list feature-list reveal" style="--i:6">
+        <li><strong>高增长：</strong>近三年营收复合增长率超 200%，国产 GPU 进入规模商用阶段</li>
+        <li><strong>高投入：</strong>2025 归母净利润 -10.01 亿元，研发与产能投入持续加码</li>
+        <li><strong>硬科技成色：</strong>累计申请专利 1854 项（发明 1743 项），获授权 646 项</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 21 结尾 -->
+  <section class="slide cover" aria-label="结尾：为美好世界加速">
+    <div class="slide-content">
+      <p class="kicker reveal" style="--i:0">Moore Threads</p>
+      <h1 class="reveal" style="--i:1">为<span class="accent">美好世界</span>加速</h1>
+      <p class="sub reveal" style="--i:2">从芯片到集群，从云端到家庭，让算力触手可及</p>
+      <div class="meta reveal" style="--i:3">
+        <span>mthreads.com</span>
+        <span>科创板 688795</span>
+      </div>
+      <p class="ticker reveal" style="--i:4">国产 GPU 的下一程，与您同行</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="deck-dots" id="dots" aria-label="幻灯片导航"></nav>
+<div class="deck-progress" aria-hidden="true"><span id="progressFill"></span></div>
+<div class="deck-counter" id="counter">01 <b>/</b> 21</div>
+<div class="keyboard-hint">← → / 空格键翻页 · 触摸滑动</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var dotsWrap = document.getElementById("dots");
+  var counter = document.getElementById("counter");
+  var progressFill = document.getElementById("progressFill");
+  var current = 0;
+
+  /* ---------------- Dots ---------------- */
+  slides.forEach(function (slide, i) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-label", "前往第 " + (i + 1) + " 页");
+    btn.addEventListener("click", function () { go(i); });
+    dotsWrap.appendChild(btn);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  /* ---------------- Navigation ---------------- */
+  function go(index, instant) {
+    index = Math.max(0, Math.min(slides.length - 1, index));
+    var behavior = instant || reduced ? "auto" : "smooth";
+    slides[index].scrollIntoView({ behavior: behavior, block: "start" });
+  }
+
+  function next() { go(current + 1); }
+  function prev() { go(current - 1); }
+
+  function onKey(e) {
+    switch (e.key) {
+      case "ArrowRight": case "ArrowDown": case " ":
+      case "PageDown": case "Enter":
+        e.preventDefault(); next(); break;
+      case "ArrowLeft": case "ArrowUp": case "PageUp":
+        e.preventDefault(); prev(); break;
+      case "Home": e.preventDefault(); go(0); break;
+      case "End": e.preventDefault(); go(slides.length - 1); break;
+    }
+  }
+  document.addEventListener("keydown", onKey);
+
+  /* Touch swipe (horizontal strongly dominant => page change; vertical native) */
+  var touchX = 0, touchY = 0;
+  document.addEventListener("touchstart", function (e) {
+    touchX = e.changedTouches[0].clientX;
+    touchY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener("touchend", function (e) {
+    var dx = e.changedTouches[0].clientX - touchX;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      if (dx < 0) next(); else prev();
+    }
+  }, { passive: true });
+
+  /* ---------------- State sync (scroll / resize) ---------------- */
+  function currentIndex() {
+    var mid = window.innerHeight / 2;
+    for (var i = 0; i < slides.length; i++) {
+      var r = slides[i].getBoundingClientRect();
+      if (r.top <= mid && r.bottom > mid) return i;
+    }
+    return Math.max(0, Math.min(slides.length - 1, Math.round(window.scrollY / window.innerHeight)));
+  }
+
+  function sync() {
+    current = currentIndex();
+    dots.forEach(function (d, i) {
+      d.classList.toggle("active", i === current);
+    });
+    counter.innerHTML = (current + 1 < 10 ? "0" : "") + (current + 1) + " <b>/</b> " + slides.length;
+    progressFill.style.width = ((current + 1) / slides.length * 100) + "%";
+  }
+
+  /* Reveal animations: add .in when a slide enters the viewport */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        entry.target.classList.toggle("in", entry.isIntersecting);
+      });
+      sync();
+    }, { threshold: 0.45 });
+    slides.forEach(function (s) { io.observe(s); });
+  } else {
+    slides.forEach(function (s) { s.classList.add("in"); });
+  }
+
+  var scrollT;
+  window.addEventListener("scroll", function () {
+    clearTimeout(scrollT);
+    scrollT = setTimeout(sync, 80);
+  }, { passive: true });
+  window.addEventListener("resize", sync);
+  window.addEventListener("load", sync);
+  sync();
+
+  /* ---------------- Particles ---------------- */
+  var canvas = document.getElementById("particles");
+  var ctx = canvas.getContext("2d");
+  var parts = [];
+  var raf = null;
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var count = Math.max(24, Math.min(70, Math.floor(window.innerWidth * window.innerHeight / 24000)));
+    parts = [];
+    for (var i = 0; i < count; i++) {
+      parts.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: 0.5 + Math.random() * 1.4,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: -(0.08 + Math.random() * 0.28),
+        c: ["#00e5ff", "#ff2e97", "#ffffff"][Math.floor(Math.random() * 3)],
+        a: 0.12 + Math.random() * 0.38
+      });
+    }
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    parts.forEach(function (p) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < -4) { p.y = window.innerHeight + 4; p.x = Math.random() * window.innerWidth; }
+      if (p.x < -4) p.x = window.innerWidth + 4;
+      if (p.x > window.innerWidth + 4) p.x = -4;
+      ctx.globalAlpha = p.a;
+      ctx.fillStyle = p.c;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if (!reduced) raf = requestAnimationFrame(tick);
+  }
+
+  function startParticles() {
+    if (reduced) return;
+    cancelAnimationFrame(raf);
+    resize();
+    tick();
+  }
+
+  window.addEventListener("resize", resize);
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { cancelAnimationFrame(raf); }
+    else if (!reduced) { cancelAnimationFrame(raf); tick(); }
+  });
+  startParticles();
+})();
+</script>
+</body>
+</html>

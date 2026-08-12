@@ -59,6 +59,13 @@ export const vibe = {
       tags: ['AI 编程', '3D 建模', '工程制图', '交互可视化'],
       link: 'https://jackzhou1018.github.io/Jack_Zhou_resume/starship-v3/index.html',
     },
+    {
+      name: '摩尔线程产品介绍 · 互动演示与 PPT',
+      desc: '用 AI 编程完成摩尔线程（科创板 688795）全功能 GPU 产品介绍：21 页 HTML 互动演示（键盘/触摸翻页、粒子动效、进度指示）与可编辑 PPTX 双版本，覆盖 MUSA 架构、四代芯片、AI 智算卡（S5000）、夸娥万卡集群、软件生态、端侧新品与资本市场数据，内容基于官网、招股书与 2025 年报整理。',
+      stats: ['21 页', 'HTML + PPTX', '双版本交付'],
+      tags: ['AI 编程', 'HTML 演示', 'PowerPoint', '产品资料'],
+      link: 'https://jackzhou1018.github.io/Jack_Zhou_resume/moore-threads/index.html',
+    },
   ],
 }
 
