@@ -38,6 +38,9 @@
           transition:opacity .22s ease; overflow:hidden; background:#0a0e15; }
   .view.on { visibility:visible; opacity:1; z-index:1; }
   .view iframe { position:absolute; inset:0; width:100%; height:100%; border:0; background:#0a0e15; }
+  .ltip { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:35;
+          color:#9fb0c2; font-size:13px; background:rgba(10,14,20,.88);
+          border:1px solid #22334a; border-radius:10px; padding:10px 18px; display:none; }
 
   .switch { position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:30;
             display:flex; gap:4px; background:rgba(10,14,20,.9); border:1px solid #22334a;
@@ -136,7 +139,7 @@
             <div class="chip"><b>18 章</b><span>维修手册</span></div>
           </div>
         </div>
-        <img src="renders/hero_photoreal.png?v=4" alt="星舰 V3 照片级渲染">
+        <img src="renders/webp/hero_photoreal.webp?v=5" alt="星舰 V3 照片级渲染" decoding="async">
       </div>
       <div class="quick">
         <div class="card" data-v="d3"><span class="ic">🧊</span><b>进入 3D 模型</b>
@@ -160,15 +163,17 @@
       <button data-m="booster">🛢️ 助推器</button>
       <button data-m="ship">🛸 飞船</button>
     </div>
-    <iframe id="f3d" src="viewer/index.html?v=4"></iframe>
+    <iframe id="f3d" data-src="viewer/index.html?v=5"></iframe>
   </section>
 
   <section id="v-manual" class="view">
-    <iframe src="manual/%E6%98%9F%E8%88%B0V3%E7%BB%B4%E4%BF%AE%E6%89%8B%E5%86%8C.html?v=4"></iframe>
+    <div class="ltip" id="tip-manual">正在加载维修手册…</div>
+    <iframe id="fmanual" data-src="manual/%E6%98%9F%E8%88%B0V3%E7%BB%B4%E4%BF%AE%E6%89%8B%E5%86%8C.html?v=5"></iframe>
   </section>
 
   <section id="v-drawings" class="view">
-    <iframe src="drawings/index.html?v=4"></iframe>
+    <div class="ltip" id="tip-drawings">正在加载图纸…</div>
+    <iframe id="fdrawings" data-src="drawings/index.html?v=5"></iframe>
   </section>
 
   <section id="v-renders" class="view">
@@ -204,6 +209,44 @@
         if (nav) nav.classList.remove("on");
       }
     });
+    ensureLoaded(name);
+  }
+  var loadedFlags = {};
+  function setIframeLazy(id, tipId) {
+    var ifr = document.getElementById(id);
+    if (!ifr || ifr.dataset.loaded) return;
+    ifr.dataset.loaded = "1";
+    var tip = tipId ? document.getElementById(tipId) : null;
+    var timer = setTimeout(function () {
+      if (tip) tip.style.display = "none";
+      if (id === "f3d") hideSpin();
+    }, id === "f3d" ? 15000 : 30000);
+    if (tip) tip.style.display = "block";
+    if (id === "f3d") spin.style.display = "block";
+    ifr.onload = function () {
+      clearTimeout(timer);
+      if (tip) tip.style.display = "none";
+      hideSpin();
+    };
+    ifr.onerror = function () {
+      clearTimeout(timer);
+      if (tip) tip.style.display = "none";
+      hideSpin();
+    };
+    ifr.src = ifr.dataset.src;
+  }
+  function ensureLoaded(name) {
+    if (name === "d3") setIframeLazy("f3d");
+    else if (name === "manual") setIframeLazy("fmanual", "tip-manual");
+    else if (name === "drawings") setIframeLazy("fdrawings", "tip-drawings");
+    else if (name === "renders") {
+      if (!loadedFlags.renders) {
+        loadedFlags.renders = true;
+        document.querySelectorAll("#rgrid img[data-src]").forEach(function (im) {
+          im.src = im.dataset.src;
+        });
+      }
+    }
   }
   document.querySelectorAll(".nav-item").forEach(function (el) {
     el.addEventListener("click", function () { show(el.dataset.v); });
@@ -213,9 +256,9 @@
   });
 
   var models = {
-    full: "viewer/index.html?v=4",
-    booster: "viewer/viewer_booster.html?v=4",
-    ship: "viewer/viewer_ship.html?v=4"
+    full: "viewer/index.html?v=5",
+    booster: "viewer/viewer_booster.html?v=5",
+    ship: "viewer/viewer_ship.html?v=5"
   };
   var f3d = document.getElementById("f3d");
   var spin = document.getElementById("spin");
@@ -238,28 +281,28 @@
   });
 
   var renders = [
-    ["renders/hero_photoreal.png", "照片级 · 3/4 主视图"],
-    ["renders/exploded_photoreal.png", "照片级 · 爆炸视图"],
-    ["renders/hero_3_4.png", "3/4 视角渲染"],
-    ["renders/exploded_view.png", "爆炸视图渲染"],
-    ["renders/side_elevation.png", "侧视图"],
-    ["renders/front_elevation.png", "正视图"],
-    ["renders/nose_cone_closeup.png", "鼻锥特写"],
-    ["renders/tps_tiles_closeup.png", "隔热瓦特写"],
-    ["renders/engine_cluster_booster.png", "助推器发动机群"],
-    ["renders/ship_engine_bay.png", "飞船发动机舱"],
-    ["renders/grid_fin_closeup.png", "栅格舵特写"],
-    ["renders/forward_flap_closeup.png", "前襟翼特写"],
-    ["renders/aft_flap_closeup.png", "后襟翼特写"],
-    ["renders/hot_stage_ring_closeup.png", "热分级环特写"]
+    ["renders/webp/hero_photoreal.webp", "照片级 · 3/4 主视图"],
+    ["renders/webp/exploded_photoreal.webp", "照片级 · 爆炸视图"],
+    ["renders/webp/hero_3_4.webp", "3/4 视角渲染"],
+    ["renders/webp/exploded_view.webp", "爆炸视图渲染"],
+    ["renders/webp/side_elevation.webp", "侧视图"],
+    ["renders/webp/front_elevation.webp", "正视图"],
+    ["renders/webp/nose_cone_closeup.webp", "鼻锥特写"],
+    ["renders/webp/tps_tiles_closeup.webp", "隔热瓦特写"],
+    ["renders/webp/engine_cluster_booster.webp", "助推器发动机群"],
+    ["renders/webp/ship_engine_bay.webp", "飞船发动机舱"],
+    ["renders/webp/grid_fin_closeup.webp", "栅格舵特写"],
+    ["renders/webp/forward_flap_closeup.webp", "前襟翼特写"],
+    ["renders/webp/aft_flap_closeup.webp", "后襟翼特写"],
+    ["renders/webp/hot_stage_ring_closeup.webp", "热分级环特写"]
   ];
   var rgrid = document.getElementById("rgrid");
   renders.forEach(function (r) {
     var fig = document.createElement("figure");
     var img = document.createElement("img");
-    img.src = r[0] + "?v=4"; img.alt = r[1];
+    img.dataset.src = r[0] + "?v=5"; img.alt = r[1];
     img.onclick = function () {
-      document.getElementById("lbimg").src = r[0] + "?v=4";
+      document.getElementById("lbimg").src = img.dataset.src;
       document.querySelector("#lb .lbt").textContent = r[1];
       document.getElementById("lb").style.display = "flex";
     };
