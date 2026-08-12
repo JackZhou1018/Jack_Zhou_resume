@@ -4,7 +4,7 @@ import { vibe } from '../data/resume.js'
 const typingLines = [
   'vibe-coding --tool 集群巡检脚本',
   'vibe-coding --tool 每日大盘监控',
-  'vibe-coding --tool GPU 环境检测',
+  'vibe-coding --tool 星舰 V3 工程级 3D 交付',
 ]
 
 export default function VibeCoding() {
@@ -42,7 +42,8 @@ export default function VibeCoding() {
             <div><span className="ln">02</span><span className="cmd">$ vibe-coding --profile FAE</span></div>
             <div><span className="ln">03</span><span className="ok">✔ 集群巡检脚本</span><span className="dim">    // 一键巡检 GPU 集群健康状态</span></div>
             <div><span className="ln">04</span><span className="ok">✔ 每日大盘监控</span><span className="dim">    // 自动盯盘 + 行情看板</span></div>
-            <div><span className="ln">05</span><span className="dim">… 作品持续补充中</span></div>
+            <div><span className="ln">05</span><span className="ok">✔ 星舰 V3 工程级 3D 交付</span><span className="dim">    // 参数化建模 · 图纸 · 维修手册</span></div>
+            <div><span className="ln">06</span><span className="dim">… 作品持续补充中</span></div>
             <div className="term-typing"><span className="ln">&gt;</span> <span className="cmd" ref={cursorRef} /><span className="term-cursor" /></div>
           </div>
         </div>
