@@ -222,7 +222,7 @@
     var timer = setTimeout(function () {
       if (tip) tip.style.display = "none";
       if (id === "f3d") hideSpin();
-    }, id === "f3d" ? 15000 : 30000);
+    }, id === "f3d" ? 30000 : 45000);
     if (tip) tip.style.display = "block";
     if (id === "f3d") spin.style.display = "block";
     ifr.onload = function () {
@@ -277,7 +277,7 @@
       f3d.onload = hideSpin;
       f3d.onerror = hideSpin;
       spin.style.display = "block";
-      spinTimer = setTimeout(hideSpin, 10000);
+      spinTimer = setTimeout(hideSpin, 30000);
       f3d.src = models[btn.dataset.m];
     });
   });
