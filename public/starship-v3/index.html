@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星舰 V3 · 工程资料中心</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
 <style>
   :root {
     --bg:#070a10; --panel:#0d1220; --line:#1e2a3d;
@@ -139,7 +140,8 @@
             <div class="chip"><b>18 章</b><span>维修手册</span></div>
           </div>
         </div>
-        <img src="renders/webp/hero_photoreal.webp?v=5" alt="星舰 V3 照片级渲染" decoding="async">
+        <img src="renders/webp/hero_photoreal.webp" alt="星舰 V3 照片级渲染"
+             decoding="async" onerror="this.onerror=null;this.src='renders/hero_photoreal.png'">
       </div>
       <div class="quick">
         <div class="card" data-v="d3"><span class="ic">🧊</span><b>进入 3D 模型</b>
@@ -163,17 +165,17 @@
       <button data-m="booster">🛢️ 助推器</button>
       <button data-m="ship">🛸 飞船</button>
     </div>
-    <iframe id="f3d" data-src="viewer/index.html?v=5"></iframe>
+    <iframe id="f3d" data-src="viewer/index.html"></iframe>
   </section>
 
   <section id="v-manual" class="view">
     <div class="ltip" id="tip-manual">正在加载维修手册…</div>
-    <iframe id="fmanual" data-src="manual/%E6%98%9F%E8%88%B0V3%E7%BB%B4%E4%BF%AE%E6%89%8B%E5%86%8C.html?v=5"></iframe>
+    <iframe id="fmanual" data-src="manual/%E6%98%9F%E8%88%B0V3%E7%BB%B4%E4%BF%AE%E6%89%8B%E5%86%8C.html"></iframe>
   </section>
 
   <section id="v-drawings" class="view">
     <div class="ltip" id="tip-drawings">正在加载图纸…</div>
-    <iframe id="fdrawings" data-src="drawings/index.html?v=5"></iframe>
+    <iframe id="fdrawings" data-src="drawings/index.html"></iframe>
   </section>
 
   <section id="v-renders" class="view">
@@ -256,9 +258,9 @@
   });
 
   var models = {
-    full: "viewer/index.html?v=5",
-    booster: "viewer/viewer_booster.html?v=5",
-    ship: "viewer/viewer_ship.html?v=5"
+    full: "viewer/index.html",
+    booster: "viewer/viewer_booster.html",
+    ship: "viewer/viewer_ship.html"
   };
   var f3d = document.getElementById("f3d");
   var spin = document.getElementById("spin");
@@ -297,10 +299,16 @@
     ["renders/webp/hot_stage_ring_closeup.webp", "热分级环特写"]
   ];
   var rgrid = document.getElementById("rgrid");
+  function pngFallback(src) {
+    return src.replace("renders/webp/", "renders/").replace(/\.webp$/, ".png");
+  }
   renders.forEach(function (r) {
     var fig = document.createElement("figure");
     var img = document.createElement("img");
-    img.dataset.src = r[0] + "?v=5"; img.alt = r[1];
+    img.dataset.src = r[0]; img.alt = r[1];
+    img.onerror = function () {
+      if (this.src.indexOf(".webp") >= 0) this.src = pngFallback(this.dataset.src);
+    };
     img.onclick = function () {
       document.getElementById("lbimg").src = img.dataset.src;
       document.querySelector("#lb .lbt").textContent = r[1];
@@ -314,6 +322,12 @@
   document.getElementById("lb").addEventListener("click", function () {
     this.style.display = "none";
   });
+  document.getElementById("lbimg").onerror = function () {
+    if (this.src.indexOf(".webp") >= 0) {
+      var src = this.src;
+      this.src = src.replace("renders/webp/", "renders/").replace(/\.webp(\?.*)?$/, ".png");
+    }
+  };
 
   var files = [
     ["🧊", "全栈 3D 模型 (GLB)", "5.6 MB · 12 部件带材质", "3D/Starship_V3_全栈.glb"],

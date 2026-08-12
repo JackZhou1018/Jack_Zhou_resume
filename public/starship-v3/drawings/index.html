@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星舰 V3 图纸集 · 零件图 & 装配图</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
 <style>
   :root { --navy:#1f3a5f; --accent:#2f6db5; --bg:#f4f6f9; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -63,7 +64,9 @@ sheets.forEach(([name, base]) => {
   card.className = "card";
   const label = name.replace("零件图_", "零件图 ").replace("装配图_", "装配图 ");
   card.innerHTML = `
-    <div class="thumb"><img src="${base}.png" alt="${label}" onclick="openLB('${base}.png')"></div>
+    <div class="thumb"><img src="webp/${base}.webp" alt="${label}"
+      onerror="this.onerror=null;this.src='${base}.png'"
+      onclick="openLB('webp/${base}.webp')"></div>
     <div class="meta"><b>${label}</b>
       <div class="links">
         <a href="${base}.png" download>下载 PNG</a>
@@ -76,6 +79,11 @@ function openLB(src) {
   document.getElementById("lb-img").src = src;
   document.getElementById("lightbox").style.display = "block";
 }
+document.getElementById("lb-img").onerror = function () {
+  if (this.src.indexOf(".webp") >= 0) {
+    this.src = this.src.replace("webp/", "").replace(/\.webp$/, ".png");
+  }
+};
 </script>
 </body>
 </html>
