@@ -1,5 +1,6 @@
 import avatar from '../assets/avatar.webp'
 import heroBg from '../assets/hero-bg.webp'
+import { profile } from '../data/resume.js'
 
 const stats = [
   { num: '5', suffix: '+', label: 'POC 项目' },
@@ -26,8 +27,7 @@ export default function Hero() {
             <span className="cn">周 猛</span>
           </h1>
           <p className="hero-desc">
-            <b>FAE 工程师 · AI 算力技术支持</b>。主导 GPU 服务器 / 加速卡 POC 验证、大模型适配与集群部署，
-            从方案设计到量产交付全流程闭环，用 AI 原生方法把重复劳动快速工具化。
+            <b>{profile.role}</b>。{profile.summary}
           </p>
           <div className="hero-actions">
             <a className="btn btn-primary" href="#projects">查看项目 <span className="arrow">→</span></a>

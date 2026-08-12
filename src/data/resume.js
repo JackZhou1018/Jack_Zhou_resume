@@ -9,6 +9,7 @@ export const profile = {
   age: 32,
   expectation: '期望岗位：FAE 工程师 · 北京 · 35-45K',
   expectShort: '北京 · FAE 工程师 · 35-45K',
+  summary: '近 10 年服务器硬件与 AI 算力技术服务经验（联想 / 同方 / 摩尔线程），覆盖 GPU 服务器测试、OEM 适配、大模型训推适配、集群交付与故障闭环；主导京东云、美团、快手等头部客户项目，具备从售前 POC 到量产交付的全流程能力，熟悉国产信创生态（麒麟 / MUSA / RoCE），并用 AI 原生方法把重复劳动快速工具化。',
 }
 
 export const highlights = [
