@@ -51,6 +51,13 @@ export const vibe = {
       tags: ['Web', '数据可视化', '自动化', '3D'],
       link: 'https://jackzhou1018.github.io/-/',
     },
+    {
+      name: '星舰 V3 · 工程级 3D 交付',
+      desc: '用 Vibe Coding 从零完成星舰 V3 全套工程交付：参数化 3D 建模（真实尺寸 124.4 m、直径 9 m、12 个命名部件、可打印 STL）、交互式查看器（全栈/助推器/飞船三模型切换、一键爆炸图、照片级材质）、10 张零件图 + 2 张装配图与 18 章维修手册，整套由 AI 编程生成并本地自检通过。',
+      stats: ['124.4 m 全高', '12 部件', '爆炸图', '18 章手册'],
+      tags: ['AI 编程', '3D 建模', '工程制图', '交互可视化'],
+      link: 'https://jackzhou1018.github.io/Jack_Zhou_resume/starship-v3/index.html',
+    },
   ],
 }
 

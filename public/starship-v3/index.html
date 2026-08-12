@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星舰 V3 · 工程资料中心</title>
+<style>
+  :root {
+    --bg:#070a10; --panel:#0d1220; --line:#1e2a3d;
+    --txt:#d7dde4; --mut:#8b9cb2; --accent:#2f6db5; --accent2:#4f9cf0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; }
+  body { background:var(--bg); color:var(--txt); display:flex;
+         font-family:"PingFang SC","Heiti SC","Microsoft YaHei",sans-serif; }
+  aside { width:236px; flex:none; background:linear-gradient(180deg,#0b1120,#0a0e18);
+          border-right:1px solid var(--line); display:flex; flex-direction:column;
+          padding:18px 12px; gap:4px; z-index:50; }
+  .brand { display:flex; align-items:center; gap:11px; padding:4px 10px 16px;
+           border-bottom:1px solid var(--line); margin-bottom:10px; }
+  .brand .logo { width:40px; height:40px; border-radius:11px; flex:none;
+                 background:linear-gradient(135deg,#1f3a5f,#2f6db5);
+                 display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .brand b { font-size:15px; letter-spacing:.6px; color:#fff; }
+  .brand small { display:block; font-size:10.5px; color:var(--mut); font-weight:400; letter-spacing:1px; }
+  .nav-item { display:flex; align-items:center; gap:11px; padding:11px 12px;
+              border-radius:9px; cursor:pointer; font-size:13.5px; color:#b6c4d4;
+              border:1px solid transparent; user-select:none; }
+  .nav-item:hover { background:#141c2e; color:#fff; }
+  .nav-item.on { background:linear-gradient(90deg,rgba(47,109,181,.30),rgba(47,109,181,.08));
+                 color:#fff; border-color:#2f5d92; }
+  .nav-item .ic { font-size:17px; width:22px; text-align:center; }
+  aside .foot { margin-top:auto; padding:10px 12px; font-size:11px; color:#5f7186;
+                line-height:1.8; border-top:1px solid var(--line); }
+  main { flex:1; position:relative; min-width:0; }
+
+  .view { position:absolute; inset:0; visibility:hidden; opacity:0;
+          transition:opacity .22s ease; overflow:hidden; background:#0a0e15; }
+  .view.on { visibility:visible; opacity:1; z-index:1; }
+  .view iframe { position:absolute; inset:0; width:100%; height:100%; border:0; background:#0a0e15; }
+
+  .switch { position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:30;
+            display:flex; gap:4px; background:rgba(10,14,20,.9); border:1px solid #22334a;
+            border-radius:11px; padding:4px; backdrop-filter:blur(6px); white-space:nowrap; }
+  .switch button { border:0; background:transparent; color:#9fb0c2; font-size:13px;
+                   padding:7px 16px; border-radius:8px; cursor:pointer; }
+  .switch button:hover { color:#fff; }
+  .switch button.on { background:var(--accent); color:#fff; }
+
+  #spin { position:absolute; top:50%; left:50%; width:46px; height:46px; z-index:40;
+          border:4px solid #1d2b40; border-top-color:var(--accent2); border-radius:50%;
+          margin:-23px 0 0 -23px; animation:sp .8s linear infinite; display:none; }
+  @keyframes sp { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+
+  .home { position:absolute; inset:0; overflow-y:auto; padding:38px 42px 70px; }
+  .hero { display:flex; gap:34px; align-items:center; flex-wrap:wrap; }
+  .hero .txt { flex:1; min-width:300px; }
+  .hero h1 { font-size:34px; letter-spacing:2px; color:#fff; }
+  .hero .en { font-size:13px; color:#6f85a0; letter-spacing:2px; margin-top:6px; }
+  .hero p { color:#b6c4d4; font-size:14px; line-height:1.95; margin-top:16px; max-width:640px; }
+  .chips { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .chip { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+          padding:10px 15px; min-width:110px; }
+  .chip b { display:block; font-size:17px; color:#fff; }
+  .chip span { font-size:11px; color:var(--mut); }
+  .hero img { width:440px; max-width:100%; border-radius:14px; border:1px solid var(--line);
+              box-shadow:0 18px 50px rgba(0,0,0,.5); }
+  .quick { margin-top:38px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  .quick .card { background:linear-gradient(160deg,#101a2e,#0c1220); border:1px solid var(--line);
+                 border-radius:12px; padding:18px; cursor:pointer; transition:transform .15s,border-color .15s; }
+  .quick .card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .quick .card .ic { font-size:22px; }
+  .quick .card b { display:block; margin-top:9px; font-size:14px; color:#fff; }
+  .quick .card span { font-size:12px; color:var(--mut); line-height:1.65; display:block; margin-top:5px; }
+
+  .pad { position:absolute; inset:0; overflow-y:auto; padding:28px 32px; }
+  .pad h2 { font-size:19px; color:#fff; letter-spacing:.5px; }
+  .pad .sub { font-size:12.5px; color:var(--mut); margin:6px 0 20px; }
+  .rgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+  .rgrid figure { background:var(--panel); border:1px solid var(--line); border-radius:12px;
+                  overflow:hidden; cursor:zoom-in; }
+  .rgrid img { width:100%; display:block; aspect-ratio:4/3; object-fit:cover; }
+  .rgrid figcaption { padding:9px 12px; font-size:12.5px; color:#c3cedc; }
+
+  .flist { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+  .fcard { background:var(--panel); border:1px solid var(--line); border-radius:11px;
+           padding:14px 16px; display:flex; gap:13px; align-items:center; }
+  .fcard .ic { font-size:23px; }
+  .fcard b { font-size:13.5px; color:#fff; display:block; }
+  .fcard span { font-size:11.5px; color:var(--mut); display:block; margin-top:2px; }
+  .fcard a { margin-left:auto; color:var(--accent2); text-decoration:none;
+             font-size:12.5px; white-space:nowrap; border:1px solid #2a4a74;
+             padding:5px 11px; border-radius:7px; }
+  .fcard a:hover { background:#16304f; }
+
+  #lb { position:fixed; inset:0; background:rgba(3,5,9,.93); z-index:200; display:none;
+        align-items:center; justify-content:center; cursor:zoom-out; }
+  #lb img { max-width:94vw; max-height:92vh; border-radius:8px; box-shadow:0 10px 60px rgba(0,0,0,.6); }
+  #lb .lbt { position:fixed; top:16px; left:50%; transform:translateX(-50%); font-size:13px;
+             color:#c3cedc; background:rgba(10,14,20,.82); padding:6px 16px; border-radius:20px; }
+
+  ::-webkit-scrollbar { width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb { background:#22334a; border-radius:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">
+    <div class="logo">🚀</div>
+    <div><b>星舰 V3</b><small>工程资料中心</small></div>
+  </div>
+  <div class="nav-item on" data-v="home"><span class="ic">🏠</span>总览</div>
+  <div class="nav-item" data-v="d3"><span class="ic">🧊</span>3D 模型</div>
+  <div class="nav-item" data-v="manual"><span class="ic">📖</span>维修手册</div>
+  <div class="nav-item" data-v="drawings"><span class="ic">📐</span>零件图纸</div>
+  <div class="nav-item" data-v="renders"><span class="ic">🖼️</span>渲染图集</div>
+  <div class="nav-item" data-v="files"><span class="ic">📦</span>模型文件</div>
+  <div class="foot">Starship V3 · 全高 124.4 m<br>直径 9.0 m · 12 个命名部件<br>GLB / STL / SVG / PNG</div>
+</aside>
+
+<main>
+  <section id="v-home" class="view on">
+    <div class="home">
+      <div class="hero">
+        <div class="txt">
+          <h1>星舰 V3 工程资料中心</h1>
+          <div class="en">STARSHIP V3 · ENGINEERING DOSSIER</div>
+          <p>一套参数化、可打印、可交互拆装的星舰 V3 工程模型：真实尺寸构建，
+             包含 12 个命名部件、照片级材质渲染、爆炸视图、全套零件图 / 装配图、
+             以及 18 章维修手册。左侧导航可随时切换 3D 模型、手册与图纸。</p>
+          <div class="chips">
+            <div class="chip"><b>124.4 m</b><span>全高</span></div>
+            <div class="chip"><b>9.0 m</b><span>直径</span></div>
+            <div class="chip"><b>12</b><span>命名部件</span></div>
+            <div class="chip"><b>18 章</b><span>维修手册</span></div>
+          </div>
+        </div>
+        <img src="renders/hero_photoreal.png?v=4" alt="星舰 V3 照片级渲染">
+      </div>
+      <div class="quick">
+        <div class="card" data-v="d3"><span class="ic">🧊</span><b>进入 3D 模型</b>
+          <span>全栈 / 助推器 / 飞船，一键爆炸图，部件独立开关</span></div>
+        <div class="card" data-v="manual"><span class="ic">📖</span><b>查看维修手册</b>
+          <span>18 章节：结构、贮箱、发动机、热防护、检修流程</span></div>
+        <div class="card" data-v="drawings"><span class="ic">📐</span><b>浏览零件图纸</b>
+          <span>10 张零件图 + 2 张装配图（含爆炸图与 BOM）</span></div>
+        <div class="card" data-v="renders"><span class="ic">🖼️</span><b>渲染图集</b>
+          <span>14 张高清渲染，含 2 张照片级视角</span></div>
+        <div class="card" data-v="files"><span class="ic">📦</span><b>下载模型文件</b>
+          <span>GLB / 可打印 STL / SVG 矢量图，全部本地文件</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-d3" class="view">
+    <div id="spin"></div>
+    <div class="switch">
+      <button data-m="full" class="on">🚀 全栈 V3</button>
+      <button data-m="booster">🛢️ 助推器</button>
+      <button data-m="ship">🛸 飞船</button>
+    </div>
+    <iframe id="f3d" src="viewer/index.html?v=4"></iframe>
+  </section>
+
+  <section id="v-manual" class="view">
+    <iframe src="manual/%E6%98%9F%E8%88%B0V3%E7%BB%B4%E4%BF%AE%E6%89%8B%E5%86%8C.html?v=4"></iframe>
+  </section>
+
+  <section id="v-drawings" class="view">
+    <iframe src="drawings/index.html?v=4"></iframe>
+  </section>
+
+  <section id="v-renders" class="view">
+    <div class="pad">
+      <h2>渲染图集</h2>
+      <div class="sub">全部由本地 3D 模型渲染生成 · 点击图片放大</div>
+      <div class="rgrid" id="rgrid"></div>
+    </div>
+  </section>
+
+  <section id="v-files" class="view">
+    <div class="pad">
+      <h2>模型与图纸文件</h2>
+      <div class="sub">所有文件均在本目录内，可直接使用或打印</div>
+      <div class="flist" id="flist"></div>
+    </div>
+  </section>
+</main>
+
+<div id="lb"><div class="lbt"></div><img id="lbimg" alt=""></div>
+
+<script>
+  var views = ["home", "d3", "manual", "drawings", "renders", "files"];
+  function show(name) {
+    views.forEach(function (v) {
+      var sec = document.getElementById("v-" + v);
+      var nav = document.querySelector('.nav-item[data-v="' + v + '"]');
+      if (v === name) {
+        sec.classList.add("on");
+        if (nav) nav.classList.add("on");
+      } else {
+        sec.classList.remove("on");
+        if (nav) nav.classList.remove("on");
+      }
+    });
+  }
+  document.querySelectorAll(".nav-item").forEach(function (el) {
+    el.addEventListener("click", function () { show(el.dataset.v); });
+  });
+  document.querySelectorAll(".quick .card").forEach(function (el) {
+    el.addEventListener("click", function () { show(el.dataset.v); });
+  });
+
+  var models = {
+    full: "viewer/index.html?v=4",
+    booster: "viewer/viewer_booster.html?v=4",
+    ship: "viewer/viewer_ship.html?v=4"
+  };
+  var f3d = document.getElementById("f3d");
+  var spin = document.getElementById("spin");
+  var spinTimer = null;
+  function hideSpin() {
+    spin.style.display = "none";
+    if (spinTimer) { clearTimeout(spinTimer); spinTimer = null; }
+  }
+  document.querySelectorAll(".switch button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".switch button").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+      if (f3d.src.indexOf(models[btn.dataset.m]) >= 0) return;
+      f3d.onload = hideSpin;
+      f3d.onerror = hideSpin;
+      spin.style.display = "block";
+      spinTimer = setTimeout(hideSpin, 10000);
+      f3d.src = models[btn.dataset.m];
+    });
+  });
+
+  var renders = [
+    ["renders/hero_photoreal.png", "照片级 · 3/4 主视图"],
+    ["renders/exploded_photoreal.png", "照片级 · 爆炸视图"],
+    ["renders/hero_3_4.png", "3/4 视角渲染"],
+    ["renders/exploded_view.png", "爆炸视图渲染"],
+    ["renders/side_elevation.png", "侧视图"],
+    ["renders/front_elevation.png", "正视图"],
+    ["renders/nose_cone_closeup.png", "鼻锥特写"],
+    ["renders/tps_tiles_closeup.png", "隔热瓦特写"],
+    ["renders/engine_cluster_booster.png", "助推器发动机群"],
+    ["renders/ship_engine_bay.png", "飞船发动机舱"],
+    ["renders/grid_fin_closeup.png", "栅格舵特写"],
+    ["renders/forward_flap_closeup.png", "前襟翼特写"],
+    ["renders/aft_flap_closeup.png", "后襟翼特写"],
+    ["renders/hot_stage_ring_closeup.png", "热分级环特写"]
+  ];
+  var rgrid = document.getElementById("rgrid");
+  renders.forEach(function (r) {
+    var fig = document.createElement("figure");
+    var img = document.createElement("img");
+    img.src = r[0] + "?v=4"; img.alt = r[1];
+    img.onclick = function () {
+      document.getElementById("lbimg").src = r[0] + "?v=4";
+      document.querySelector("#lb .lbt").textContent = r[1];
+      document.getElementById("lb").style.display = "flex";
+    };
+    var cap = document.createElement("figcaption");
+    cap.textContent = r[1];
+    fig.appendChild(img); fig.appendChild(cap);
+    rgrid.appendChild(fig);
+  });
+  document.getElementById("lb").addEventListener("click", function () {
+    this.style.display = "none";
+  });
+
+  var files = [
+    ["🧊", "全栈 3D 模型 (GLB)", "5.6 MB · 12 部件带材质", "3D/Starship_V3_全栈.glb"],
+    ["🖨️", "全栈可打印模型 (STL)", "11 MB · 毫米单位", "3D/Starship_V3_全栈.stl"],
+    ["🛢️", "Super Heavy 助推器 (GLB)", "2.3 MB · 带材质", "3D/SuperHeavy_助推器.glb"],
+    ["🛢️", "Super Heavy 助推器 (STL)", "4.6 MB · 可打印", "3D/SuperHeavy_助推器.stl"],
+    ["🛸", "Starship 飞船 (GLB)", "3.4 MB · 带材质", "3D/Starship_飞船.glb"],
+    ["🛸", "Starship 飞船 (STL)", "6.6 MB · 可打印", "3D/Starship_飞船.stl"],
+    ["📐", "零件图纸（PNG ×10）", "高清位图", "drawings/零件图_01_鼻锥组件.png"],
+    ["📐", "装配图纸（PNG ×2）", "总装图 + 爆炸图", "drawings/装配图_02_爆炸图与BOM.png"],
+    ["📖", "维修手册（HTML）", "18 章 · 自包含", "manual/星舰V3维修手册.html"],
+    ["🗂️", "交互式查看器", "3D 模型单页版", "viewer/index.html"]
+  ];
+  var flist = document.getElementById("flist");
+  files.forEach(function (f) {
+    var card = document.createElement("div");
+    card.className = "fcard";
+    card.innerHTML = '<span class="ic">' + f[0] + '</span>' +
+      '<div><b>' + f[1] + '</b><span>' + f[2] + '</span></div>' +
+      '<a href="' + f[3] + '" target="_blank">打开</a>';
+    flist.appendChild(card);
+  });
+</script>
+</body>
+</html>

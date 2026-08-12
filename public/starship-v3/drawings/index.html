@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星舰 V3 图纸集 · 零件图 & 装配图</title>
+<style>
+  :root { --navy:#1f3a5f; --accent:#2f6db5; --bg:#f4f6f9; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:#1c2733;
+         font-family:"PingFang SC","Heiti SC","Microsoft YaHei",sans-serif; }
+  header { background:var(--navy); color:#fff; padding:22px 28px; }
+  header h1 { font-size:22px; letter-spacing:1px; }
+  header p { font-size:13px; color:#b8c9dd; margin-top:4px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+          gap:18px; padding:22px 28px; }
+  .card { background:#fff; border:1px solid #dde3ea; border-radius:10px;
+          overflow:hidden; box-shadow:0 1px 4px rgba(20,40,70,.08); }
+  .card .thumb { display:block; background:#0b0e13; }
+  .card img { width:100%; display:block; cursor:zoom-in; }
+  .card .meta { padding:10px 12px; }
+  .card .meta b { font-size:14px; }
+  .card .meta .links { margin-top:5px; font-size:12px; }
+  .card .meta a { color:var(--accent); text-decoration:none; margin-right:10px; }
+  .card .meta a:hover { text-decoration:underline; }
+  footer { padding:14px 28px 26px; color:#5a6472; font-size:12px; }
+  #lightbox { display:none; position:fixed; inset:0; background:rgba(8,10,14,.94);
+              z-index:50; text-align:center; }
+  #lightbox img { max-width:94vw; max-height:92vh; margin-top:3vh; }
+  #lightbox .close { position:absolute; top:14px; right:22px; color:#fff;
+                     font-size:30px; cursor:pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1>星舰 V3 图纸集</h1>
+  <p>零件图（10 页）+ 装配图（2 页）· 点击图片放大 · 提供 PNG / SVG 矢量版</p>
+</header>
+<div class="grid" id="grid"></div>
+<footer>本图纸集为参数化技术演示图纸，尺寸为设计示例值。</footer>
+<div id="lightbox" onclick="this.style.display='none'">
+  <span class="close">&times;</span>
+  <img id="lb-img" src="">
+</div>
+<script>
+const sheets = [
+  ["零件图_01_鼻锥组件", "零件图_01_鼻锥组件"],
+  ["零件图_02_载荷舱段", "零件图_02_载荷舱段"],
+  ["零件图_03_贮箱舱段", "零件图_03_贮箱舱段"],
+  ["零件图_04_后襟翼", "零件图_04_后襟翼"],
+  ["零件图_05_前襟翼", "零件图_05_前襟翼"],
+  ["零件图_06_栅格舵", "零件图_06_栅格舵"],
+  ["零件图_07_猛禽海平面发动机", "零件图_07_猛禽海平面发动机"],
+  ["零件图_08_猛禽真空发动机", "零件图_08_猛禽真空发动机"],
+  ["零件图_09_热分级环", "零件图_09_热分级环"],
+  ["零件图_10_隔热瓦", "零件图_10_隔热瓦"],
+  ["装配图_01_总装图", "装配图_01_总装图"],
+  ["装配图_02_爆炸图与BOM", "装配图_02_爆炸图与BOM"],
+];
+const grid = document.getElementById("grid");
+sheets.forEach(([name, base]) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  const label = name.replace("零件图_", "零件图 ").replace("装配图_", "装配图 ");
+  card.innerHTML = `
+    <div class="thumb"><img src="${base}.png" alt="${label}" onclick="openLB('${base}.png')"></div>
+    <div class="meta"><b>${label}</b>
+      <div class="links">
+        <a href="${base}.png" download>下载 PNG</a>
+        <a href="${base}.svg" download>下载 SVG</a>
+      </div>
+    </div>`;
+  grid.appendChild(card);
+});
+function openLB(src) {
+  document.getElementById("lb-img").src = src;
+  document.getElementById("lightbox").style.display = "block";
+}
+</script>
+</body>
+</html>
