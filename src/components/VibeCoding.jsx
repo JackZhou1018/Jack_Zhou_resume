@@ -32,8 +32,8 @@ export default function VibeCoding() {
       <div className="container">
         <div className="section-head reveal">
           <span className="sec-index">05</span>
-          <h2>Vibe Coding</h2>
-          <span className="cn">AI 原生作品</span>
+          <h2>AI Automation</h2>
+          <span className="cn">AI 原生自动化与工程工具</span>
         </div>
         <div className="panel term reveal">
           <div className="term-bar"><i /><i /><i /><span className="term-title">jack@jackzhou: ~/workspace</span></div>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#04060c"/><stop offset="1" stop-color="#0a2432"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#2de3a6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M0 100H1200M0 200H1200M0 300H1200M0 400H1200M0 500H1200M150 0V630M350 0V630M550 0V630M750 0V630M950 0V630" stroke="#2de3a6" stroke-opacity=".12"/>
+  <rect x="86" y="92" width="10" height="340" rx="5" fill="url(#accent)"/>
+  <text x="130" y="190" fill="#2de3a6" font-family="Arial, sans-serif" font-size="28" letter-spacing="8">AI COMPUTE FAE</text>
+  <text x="130" y="290" fill="#edf8ff" font-family="Arial, sans-serif" font-size="76" font-weight="700">JACK ZHOU</text>
+  <text x="132" y="352" fill="#9fb3cf" font-family="Arial, sans-serif" font-size="33">周猛 · AI 算力技术支持</text>
+  <text x="132" y="472" fill="#9fb3cf" font-family="Arial, sans-serif" font-size="25">GPU 服务器 POC · 大模型适配 · 集群交付</text>
+  <text x="132" y="520" fill="#9fb3cf" font-family="Arial, sans-serif" font-size="25">从技术验证到规模化部署的全流程闭环</text>
+</svg>

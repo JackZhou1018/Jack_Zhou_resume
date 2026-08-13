@@ -67,6 +67,8 @@ img{display:block}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:10px;font-size:.93rem;font-weight:600;letter-spacing:.04em;cursor:pointer;border:1px solid transparent;transition:all .3s var(--ease)}
 .btn-primary{color:#03120c;background:linear-gradient(120deg,var(--accent),var(--accent2));box-shadow:0 8px 30px rgba(45,227,166,.28)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(45,227,166,.42)}
+.btn-download{color:var(--text-hi);border-color:rgba(34,211,238,.55);background:rgba(34,211,238,.08)}
+.btn-download:hover{background:rgba(34,211,238,.16);transform:translateY(-2px)}
 .btn-ghost{color:var(--accent);border-color:var(--line-strong);background:rgba(45,227,166,.05)}
 .btn-ghost:hover{background:rgba(45,227,166,.13);transform:translateY(-2px)}
 .btn .arrow{font-family:var(--mono)}

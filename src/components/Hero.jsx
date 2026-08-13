@@ -31,6 +31,7 @@ export default function Hero() {
           </p>
           <div className="hero-actions">
             <a className="btn btn-primary" href="#projects">查看项目 <span className="arrow">→</span></a>
+            <a className="btn btn-download" href="/Jack_Zhou-FAE-Resume.pdf" download>下载 PDF 简历 <span className="arrow">↓</span></a>
             <a className="btn btn-ghost" href="#contact">联系我</a>
           </div>
           <div className="hero-stats">

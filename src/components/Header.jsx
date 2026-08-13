@@ -3,7 +3,7 @@ const links = [
   ['经历', '#experience'],
   ['项目', '#projects'],
   ['技能', '#skills'],
-  ['Vibe Coding', '#vibe'],
+  ['AI 工具与自动化', '#vibe'],
   ['联系', '#contact'],
 ]
 

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jackzhou1018.github.io/Jack_Zhou_resume/sitemap.xml

@@ -18,6 +18,20 @@ export default function Contact() {
             </div>
           </div>
           <div className="panel contact-item reveal">
+            <span className="contact-ico">⌘</span>
+            <div>
+              <div className="lbl">GitHub</div>
+              <div className="val"><a href="https://github.com/jackzhou1018" target="_blank" rel="noreferrer">github.com/jackzhou1018</a></div>
+            </div>
+          </div>
+          <div className="panel contact-item reveal">
+            <span className="contact-ico">微</span>
+            <div>
+              <div className="lbl">微信</div>
+              <div className="val">{profile.phone}</div>
+            </div>
+          </div>
+          <div className="panel contact-item reveal">
             <span className="contact-ico">✉</span>
             <div>
               <div className="lbl">邮箱</div>
